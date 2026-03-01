@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8020Staking — Rebalancing the Validator Landscape</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0A0F2C;
+    --navy-light: #121936;
+    --amber: #F5A623;
+    --amber-dark: #D4891A;
+    --white: #F8F8F2;
+    --gray: #9A9AAF;
+    --card-bg: #141930;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--navy); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; overflow-x: hidden; }
+  h1,h2,h3,h4 { font-family: 'Space Grotesk', sans-serif; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 5%; transition: background 0.3s, backdrop-filter 0.3s;
+  }
+  nav.scrolled { background: rgba(10,15,44,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(245,166,35,0.15); }
+  .nav-logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+  .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--gray); text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--white); }
+  .btn { display: inline-block; padding: 0.6rem 1.4rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; text-decoration: none; }
+  .btn-amber { background: var(--amber); color: var(--navy); border: 2px solid var(--amber); }
+  .btn-amber:hover { background: var(--amber-dark); border-color: var(--amber-dark); transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.3); }
+  .btn-outline:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-1px); }
+
+  /* HERO */
+  #hero { position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+  #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero-content { position: relative; z-index: 2; max-width: 800px; padding: 0 2rem; }
+  .hero-content h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+  .hero-content h1 span { color: var(--amber); }
+  .hero-content p { font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: var(--gray); margin-bottom: 2.5rem; }
+  .hero-ctas { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .scroll-indicator { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.3rem; color: var(--gray); font-size: 0.8rem; animation: bounce 2s infinite; }
+  .scroll-indicator::after { content: '↓'; font-size: 1.2rem; color: var(--amber); }
+  @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+  /* STATS */
+  #stats { background: var(--card-bg); padding: 4rem 5%; border-top: 1px solid rgba(245,166,35,0.2); border-bottom: 1px solid rgba(245,166,35,0.2); }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2rem; text-align: center; max-width: 1000px; margin: 0 auto; }
+  .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 2.4rem; font-weight: 700; color: var(--amber); }
+  .stat-label { color: var(--gray); font-size: 0.9rem; margin-top: 0.3rem; }
+
+  /* SECTIONS */
+  section { padding: 6rem 5%; }
+  .section-label { text-transform: uppercase; letter-spacing: 0.15em; font-size: 0.8rem; color: var(--amber); margin-bottom: 1rem; font-weight: 600; }
+  .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; margin-bottom: 1.5rem; }
+  .section-title span { color: var(--amber); }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ABOUT */
+  #about { background: var(--navy-light); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+  .about-text p { color: var(--gray); line-height: 1.8; margin-bottom: 1rem; }
+  .pareto-visual { display: flex; align-items: center; justify-content: center; gap: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+  .pareto-80 { font-size: clamp(5rem, 12vw, 9rem); color: var(--amber); line-height: 1; }
+  .pareto-divider { width: 4px; height: clamp(6rem, 14vw, 10rem); background: linear-gradient(to bottom, var(--amber), rgba(245,166,35,0.2)); margin: 0 1rem; border-radius: 2px; box-shadow: 0 0 20px rgba(245,166,35,0.4); }
+  .pareto-20 { font-size: clamp(5rem, 12vw, 9rem); color: var(--navy); -webkit-text-stroke: 2px rgba(255,255,255,0.15); line-height: 1; }
+
+  /* NETWORKS */
+  #networks { background: var(--navy); }
+  .networks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+  .network-card { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; padding: 1.5rem 1rem; background: var(--card-bg); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); transition: all 0.25s; cursor: default; }
+  .network-card:hover { border-color: var(--amber); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(245,166,35,0.15); }
+  .network-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; font-family: 'Space Grotesk', sans-serif; }
+  .network-name { font-size: 0.85rem; color: var(--gray); text-align: center; }
+
+  /* WHY */
+  #why { background: var(--navy-light); }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem; }
+  .feature-card { background: var(--card-bg); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255,255,255,0.06); transition: border-color 0.25s; }
+  .feature-card:hover { border-color: rgba(245,166,35,0.3); }
+  .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .feature-card h3 { font-size: 1.15rem; margin-bottom: 0.7rem; }
+  .feature-card p { color: var(--gray); font-size: 0.92rem; line-height: 1.7; }
+
+  /* TEAM */
+  #team { background: var(--navy); text-align: center; }
+  .team-grid { display: flex; justify-content: center; margin-top: 3rem; }
+  .team-card { max-width: 320px; }
+  .team-photo-wrap { width: 160px; height: 160px; margin: 0 auto 1.5rem; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--amber), rgba(245,166,35,0.3)); box-shadow: 0 0 30px rgba(245,166,35,0.25); }
+  .team-photo-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; filter: saturate(0.85) brightness(0.95); }
+  .team-name { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .team-title { color: var(--amber); font-size: 0.9rem; font-weight: 600; margin-bottom: 1rem; }
+  .team-bio { color: var(--gray); font-size: 0.9rem; line-height: 1.7; }
+
+  /* CONTACT */
+  #contact { background: var(--navy-light); }
+  .contact-inner { max-width: 580px; margin: 0 auto; text-align: center; }
+  .contact-inner p { color: var(--gray); margin-bottom: 2.5rem; }
+  .form-group { margin-bottom: 1.2rem; text-align: left; }
+  .form-group input, .form-group textarea {
+    width: 100%; padding: 0.85rem 1rem; background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+    color: var(--white); font-family: 'Inter', sans-serif; font-size: 0.95rem;
+    transition: border-color 0.2s; outline: none;
+  }
+  .form-group input:focus, .form-group textarea:focus { border-color: var(--amber); }
+  .form-group textarea { height: 130px; resize: vertical; }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: var(--gray); }
+  .btn-full { width: 100%; padding: 0.9rem; font-size: 1rem; border: none; }
+
+  /* FOOTER */
+  footer { background: #060A1C; padding: 3rem 5%; border-top: 1px solid rgba(255,255,255,0.06); }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
+  .footer-copy { color: var(--gray); font-size: 0.85rem; }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { color: var(--gray); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--amber); }
+
+  /* FADE IN */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .pareto-visual { justify-content: center; }
+    .nav-links { display: none; }
+    .footer-inner { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <svg width="110" height="36" viewBox="0 0 110 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="26" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="26" fill="#F8F8F2">80</text>
+      <rect x="46" y="4" width="3" height="26" rx="1.5" fill="#F5A623" filter="url(#glow)"/>
+      <text x="54" y="26" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="26" fill="#F8F8F2">20</text>
+      <text x="0" y="36" font-family="Space Grotesk, sans-serif" font-weight="500" font-size="9" fill="#F5A623" letter-spacing="4">STAKING</text>
+      <defs>
+        <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+    </svg>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#networks">Networks</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#contact" class="btn btn-amber">Get Started</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <h1><span>80%</span> of the blocks are built by <span>20%</span> of the validators.</h1>
+    <p>We are here to change that.</p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn btn-amber">Start Staking</a>
+      <a href="#about" class="btn btn-outline">Learn More</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">scroll</div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stats-grid">
+    <div class="fade-in"><div class="stat-value" data-target="2.4" data-suffix="B+">0</div><div class="stat-label">USD Staked</div></div>
+    <div class="fade-in"><div class="stat-value" data-target="99.9" data-suffix="% Uptime">0</div><div class="stat-label">Validator Uptime</div></div>
+    <div class="fade-in"><div class="stat-value" data-target="40" data-suffix="+">0</div><div class="stat-label">Networks Supported</div></div>
+    <div class="fade-in"><div class="stat-value" data-target="500" data-suffix="+">0</div><div class="stat-label">Validators Empowered</div></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text fade-in">
+        <div class="section-label">Our Mission</div>
+        <h2 class="section-title">The <span>Pareto Problem</span> in Crypto</h2>
+        <p>The Pareto Principle states that 80% of outcomes come from 20% of causes. In blockchain networks, this plays out every day: a small cluster of validators captures the vast majority of block rewards, leaving everyone else behind.</p>
+        <p>This isn't just unfair — it's a centralisation risk that undermines the core promise of decentralised networks. At 8020Staking, we're building infrastructure and tooling that shifts the balance, giving independent validators the edge they need to compete.</p>
+        <p>More validators. More decentralisation. More resilient networks for everyone.</p>
+      </div>
+      <div class="fade-in" style="display:flex;align-items:center;justify-content:center;">
+        <div class="pareto-visual">
+          <div class="pareto-80">80</div>
+          <div class="pareto-divider"></div>
+          <div class="pareto-20">20</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NETWORKS -->
+<section id="networks">
+  <div class="container">
+    <div class="section-label">Ecosystem</div>
+    <h2 class="section-title">Networks We <span>Support</span></h2>
+    <div class="networks-grid">
+      <div class="network-card fade-in"><div class="network-icon" style="background:#454A75;color:#fff;">ETH</div><div class="network-name">Ethereum</div></div>
+      <div class="network-card fade-in"><div class="network-icon" style="background:#9945FF;color:#fff;">SOL</div><div class="network-name">Solana</div></div>
+      <div class="network-card fade-in"><div class="network-icon" style="background:#2E3148;color:#6F7CBA;">ATOM</div><div class="network-name">Cosmos</div></div>
+      <div class="network-card fade-in"><div class="network-icon" style="background:#E6007A;color:#fff;">DOT</div><div class="network-name">Polkadot</div></div>
+      <div class="network-card fade-in"><div class="network-icon" style="background:#E84142;color:#fff;">AVAX</div><div class="network-name">Avalanche</div></div>
+      <div class="network-card fade-in"><div class="network-icon" style="background:#00C08B;color:#fff;">NEAR</div><div class="network-name">Near</div></div>
+      <div class="network-card fade-in"><div class="network-icon" style="background:#7B2D8B;color:#fff;">TIA</div><div class="network-name">Celestia</div></div>
+      <div class="network-card fade-in"><div class="network-icon" style="background:#4DA2FF;color:#fff;">SUI</div><div class="network-name">Sui</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="container">
+    <div class="section-label">Why Us</div>
+    <h2 class="section-title">Built <span>Different</span></h2>
+    <div class="features-grid">
+      <div class="feature-card fade-in">
+        <div class="feature-icon">⚖️</div>
+        <h3>Decentralized by Design</h3>
+        <p>We don't concentrate stake. We distribute it. Our infrastructure is architected to support more validators, not fewer — because a healthy network needs breadth, not just depth.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🔒</div>
+        <h3>Institutional Grade Security</h3>
+        <p>24/7 monitoring, mission-critical failovers, and non-custodial architecture mean your assets stay yours. We bring enterprise-grade reliability without the enterprise-grade gatekeeping.</p>
+      </div>
+      <div class="feature-card fade-in">
+        <div class="feature-icon">🔍</div>
+        <h3>Transparent & Non-Custodial</h3>
+        <p>No black boxes. You retain control of your keys, your assets, and your decisions. We provide the infrastructure — you maintain sovereignty.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="container">
+    <div class="section-label">The Team</div>
+    <h2 class="section-title">Who's <span>Behind It</span></h2>
+    <div class="team-grid">
+      <div class="team-card fade-in">
+        <div class="team-photo-wrap">
+          <img src="https://media.licdn.com/dms/image/v2/C4E03AQG_JvXJ8x9eKA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1579272373539?e=1746057600&v=beta&t=YnlRNsPzI3y0Qdq-lCRK39BqIFX5wJpHMcW6G2AMmtc" alt="Kristiyan Georgiev" onerror="this.src='https://ui-avatars.com/api/?name=Kristiyan+Georgiev&background=F5A623&color=0A0F2C&size=160'">
+        </div>
+        <div class="team-name">Kristiyan Georgiev</div>
+        <div class="team-title">CEO & Founder</div>
+        <div class="team-bio">Building a more equitable validator ecosystem. Kristiyan brings deep expertise in blockchain infrastructure and a mission-driven approach to decentralisation.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div class="section-label">Get In Touch</div>
+      <h2 class="section-title">Ready to Stake <span>Smarter?</span></h2>
+      <p>Whether you're an institution looking for reliable infrastructure or an independent validator ready to level up — let's talk.</p>
+      <form onsubmit="event.preventDefault(); alert('Thanks! We\'ll be in touch.');">
+        <div class="form-group"><input type="text" placeholder="Your Name" required></div>
+        <div class="form-group"><input type="email" placeholder="Email Address" required></div>
+        <div class="form-group"><textarea placeholder="Tell us what you're looking for..."></textarea></div>
+        <button type="submit" class="btn btn-amber btn-full">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <svg width="90" height="30" viewBox="0 0 90 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="22" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="22" fill="#F8F8F2">80</text>
+        <rect x="38" y="3" width="2.5" height="22" rx="1.25" fill="#F5A623"/>
+        <text x="45" y="22" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="22" fill="#F8F8F2">20</text>
+        <text x="0" y="30" font-family="Space Grotesk, sans-serif" font-weight="500" font-size="7.5" fill="#F5A623" letter-spacing="3.5">STAKING</text>
+      </svg>
+    </div>
+    <div class="footer-copy">© 2025 8020Staking. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="#">Twitter/X</a>
+      <a href="#">LinkedIn</a>
+      <a href="https://github.com/peggyagent/8020staking">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// NAV scroll effect
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// CANVAS particle network
+const canvas = document.getElementById('hero-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [], W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function Particle() {
+  this.x = Math.random() * W;
+  this.y = Math.random() * H;
+  this.vx = (Math.random() - 0.5) * 0.4;
+  this.vy = (Math.random() - 0.5) * 0.4;
+  this.r = Math.random() * 2 + 1;
+}
+
+for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(245,166,35,0.7)';
+    ctx.fill();
+  });
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(245,166,35,${0.15 * (1 - d/120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+// COUNT-UP stats
+function countUp(el) {
+  const target = parseFloat(el.dataset.target);
+  const suffix = el.dataset.suffix || '';
+  const isDecimal = String(target).includes('.');
+  const duration = 2000;
+  const start = performance.now();
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const val = target * ease;
+    el.textContent = (isDecimal ? val.toFixed(1) : Math.floor(val)) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// INTERSECTION OBSERVER
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      const stat = entry.target.querySelector('[data-target]');
+      if (stat) countUp(stat);
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
