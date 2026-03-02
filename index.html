@@ -124,7 +124,40 @@
   .footer-links a { color: var(--gray); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
   .footer-links a:hover { color: var(--amber); }
 
-  /* FADE IN */
+  /* NETWORKS TABLE */
+.networks-table-wrap{overflow-x:auto;border-radius:8px;border:1px solid rgba(245,166,35,0.15)}
+.networks-table{width:100%;border-collapse:collapse;font-size:0.93rem}
+.networks-table thead tr{background:rgba(245,166,35,0.08);border-bottom:1px solid rgba(245,166,35,0.2)}
+.networks-table th{padding:1rem 1.2rem;text-align:left;font-family:'Space Grotesk',sans-serif;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray);font-weight:600}
+.networks-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.2s}
+.networks-table tbody tr:last-child{border-bottom:none}
+.networks-table tbody tr:hover{background:rgba(245,166,35,0.04)}
+.networks-table td{padding:1rem 1.2rem;color:var(--white)}
+.net-name{display:flex;align-items:center;gap:0.7rem;font-weight:500;font-family:'Space Grotesk',sans-serif}
+.net-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.net-token{color:var(--gray);font-size:0.85rem;font-family:'Space Grotesk',sans-serif;letter-spacing:0.05em}
+.net-apy{color:var(--amber);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem}
+.net-commission{color:var(--gray);font-size:0.88rem}
+.status-badge{font-size:0.78rem;padding:0.3rem 0.7rem;border-radius:20px;font-family:'Space Grotesk',sans-serif;letter-spacing:0.04em;font-weight:500}
+.status-badge.active{background:rgba(0,200,100,0.12);color:#00C864;border:1px solid rgba(0,200,100,0.2)}
+.btn-stake{background:transparent;border:1px solid rgba(245,166,35,0.4);color:var(--amber);padding:0.35rem 0.9rem;border-radius:4px;font-family:'Space Grotesk',sans-serif;font-size:0.82rem;text-decoration:none;transition:all 0.2s;white-space:nowrap}
+.btn-stake:hover{background:var(--amber);color:var(--navy)}
+.networks-note{font-size:0.78rem;color:var(--gray);margin-top:1rem;font-style:italic}
+
+/* INSIGHT */
+.insight-card{display:grid;grid-template-columns:1fr 280px;gap:4rem;background:rgba(245,240,232,0.03);border:1px solid rgba(245,166,35,0.15);border-radius:12px;padding:3rem;margin-top:2.5rem}
+.insight-tag{font-family:'Oswald','Space Grotesk',sans-serif;font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem}
+.insight-content h3{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;color:var(--white);line-height:1.4;margin-bottom:1.2rem}
+.insight-content p{color:rgba(245,240,232,0.7);line-height:1.8;font-size:0.95rem;margin-bottom:0.8rem}
+.insight-stat-col{display:flex;flex-direction:column;gap:1.5rem;border-left:1px solid rgba(245,166,35,0.2);padding-left:3rem}
+.insight-stat-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;color:var(--amber);line-height:1;margin-bottom:0.4rem}
+.insight-stat-label{font-size:0.82rem;color:var(--gray);line-height:1.5}
+@media(max-width:768px){
+  .insight-card{grid-template-columns:1fr}
+  .insight-stat-col{border-left:none;border-top:1px solid rgba(245,166,35,0.2);padding-left:0;padding-top:2rem}
+}
+
+/* FADE IN */
   .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
   .fade-in.visible { opacity: 1; transform: translateY(0); }
 
@@ -167,7 +200,7 @@
 <section id="hero">
   <canvas id="hero-canvas"></canvas>
   <div class="hero-content">
-    <h1><span>80%</span> of the blocks are built by <span>20%</span> of the validators.</h1>
+    <h1>The validator landscape is <span>broken.</span> <span>80%</span> of rewards flow to <span>20%</span> of validators.</h1>
     <p>We are here to change that.</p>
     <div class="hero-ctas">
       <a href="#contact" class="btn btn-amber">Start Staking</a>
@@ -194,7 +227,7 @@
       <div class="about-text fade-in">
         <div class="section-label">Our Mission</div>
         <h2 class="section-title">The <span>Pareto Problem</span> in Crypto</h2>
-        <p>The Pareto Principle states that 80% of outcomes come from 20% of causes. In blockchain networks, this plays out every day: a small cluster of validators captures the vast majority of block rewards, leaving everyone else behind.</p>
+        <p>The Pareto Principle states that 80% of outcomes come from 20% of causes. In blockchain networks, this plays out every day: 20% of validators control 80% of the stake — capturing the vast majority of rewards and leaving everyone else behind.</p>
         <p>This isn't just unfair — it's a centralisation risk that undermines the core promise of decentralised networks. At 8020Staking, we're building infrastructure and tooling that shifts the balance, giving independent validators the edge they need to compete.</p>
         <p>More validators. More decentralisation. More resilient networks for everyone.</p>
       </div>
@@ -212,18 +245,90 @@
 <!-- NETWORKS -->
 <section id="networks">
   <div class="container">
-    <div class="section-label">Ecosystem</div>
-    <h2 class="section-title">Networks We <span>Support</span></h2>
-    <div class="networks-grid">
-      <div class="network-card fade-in"><div class="network-icon" style="background:#454A75;color:#fff;">ETH</div><div class="network-name">Ethereum</div></div>
-      <div class="network-card fade-in"><div class="network-icon" style="background:#9945FF;color:#fff;">SOL</div><div class="network-name">Solana</div></div>
-      <div class="network-card fade-in"><div class="network-icon" style="background:#2E3148;color:#6F7CBA;">ATOM</div><div class="network-name">Cosmos</div></div>
-      <div class="network-card fade-in"><div class="network-icon" style="background:#E6007A;color:#fff;">DOT</div><div class="network-name">Polkadot</div></div>
-      <div class="network-card fade-in"><div class="network-icon" style="background:#E84142;color:#fff;">AVAX</div><div class="network-name">Avalanche</div></div>
-      <div class="network-card fade-in"><div class="network-icon" style="background:#00C08B;color:#fff;">NEAR</div><div class="network-name">Near</div></div>
-      <div class="network-card fade-in"><div class="network-icon" style="background:#7B2D8B;color:#fff;">TIA</div><div class="network-name">Celestia</div></div>
-      <div class="network-card fade-in"><div class="network-icon" style="background:#4DA2FF;color:#fff;">SUI</div><div class="network-name">Sui</div></div>
+    <div class="section-label fade-in">Active Validators</div>
+    <h2 class="section-title fade-in">Networks We <span>Support</span></h2>
+    <p class="lead fade-in" style="margin-bottom:2.5rem;">Live validator status and current staking rewards across all supported networks.</p>
+    <div class="networks-table-wrap fade-in">
+      <table class="networks-table">
+        <thead>
+          <tr>
+            <th>Network</th>
+            <th>Token</th>
+            <th>Expected APY</th>
+            <th>Commission</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="net-name"><span class="net-dot" style="background:#627EEA"></span>Ethereum</td>
+            <td class="net-token">ETH</td>
+            <td class="net-apy">3.8%</td>
+            <td class="net-commission">5%</td>
+            <td><span class="status-badge active">● Active</span></td>
+            <td><a href="#contact" class="btn-stake">Stake</a></td>
+          </tr>
+          <tr>
+            <td class="net-name"><span class="net-dot" style="background:#9945FF"></span>Solana</td>
+            <td class="net-token">SOL</td>
+            <td class="net-apy">6.2%</td>
+            <td class="net-commission">5%</td>
+            <td><span class="status-badge active">● Active</span></td>
+            <td><a href="#contact" class="btn-stake">Stake</a></td>
+          </tr>
+          <tr>
+            <td class="net-name"><span class="net-dot" style="background:#6F7CBA"></span>Cosmos</td>
+            <td class="net-token">ATOM</td>
+            <td class="net-apy">14.5%</td>
+            <td class="net-commission">5%</td>
+            <td><span class="status-badge active">● Active</span></td>
+            <td><a href="#contact" class="btn-stake">Stake</a></td>
+          </tr>
+          <tr>
+            <td class="net-name"><span class="net-dot" style="background:#E6007A"></span>Polkadot</td>
+            <td class="net-token">DOT</td>
+            <td class="net-apy">11.8%</td>
+            <td class="net-commission">5%</td>
+            <td><span class="status-badge active">● Active</span></td>
+            <td><a href="#contact" class="btn-stake">Stake</a></td>
+          </tr>
+          <tr>
+            <td class="net-name"><span class="net-dot" style="background:#E84142"></span>Avalanche</td>
+            <td class="net-token">AVAX</td>
+            <td class="net-apy">7.4%</td>
+            <td class="net-commission">5%</td>
+            <td><span class="status-badge active">● Active</span></td>
+            <td><a href="#contact" class="btn-stake">Stake</a></td>
+          </tr>
+          <tr>
+            <td class="net-name"><span class="net-dot" style="background:#00C08B"></span>Near</td>
+            <td class="net-token">NEAR</td>
+            <td class="net-apy">8.9%</td>
+            <td class="net-commission">5%</td>
+            <td><span class="status-badge active">● Active</span></td>
+            <td><a href="#contact" class="btn-stake">Stake</a></td>
+          </tr>
+          <tr>
+            <td class="net-name"><span class="net-dot" style="background:#7B2D8B"></span>Celestia</td>
+            <td class="net-token">TIA</td>
+            <td class="net-apy">12.1%</td>
+            <td class="net-commission">5%</td>
+            <td><span class="status-badge active">● Active</span></td>
+            <td><a href="#contact" class="btn-stake">Stake</a></td>
+          </tr>
+          <tr>
+            <td class="net-name"><span class="net-dot" style="background:#4DA2FF"></span>Sui</td>
+            <td class="net-token">SUI</td>
+            <td class="net-apy">3.2%</td>
+            <td class="net-commission">5%</td>
+            <td><span class="status-badge active">● Active</span></td>
+            <td><a href="#contact" class="btn-stake">Stake</a></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <p class="networks-note fade-in">* APY figures are estimates based on current network conditions and may vary. Commission subject to change.</p>
   </div>
 </section>
 
@@ -236,7 +341,7 @@
       <div class="feature-card fade-in">
         <div class="feature-icon">⚖️</div>
         <h3>Decentralized by Design</h3>
-        <p>We don't concentrate stake. We distribute it. Our infrastructure is architected to support more validators, not fewer — because a healthy network needs breadth, not just depth.</p>
+        <p>We don't concentrate stake. We distribute it. Our infrastructure is architected to support more validators, not fewer — because a healthy network needs breadth, not just a handful of dominant players.</p>
       </div>
       <div class="feature-card fade-in">
         <div class="feature-icon">🔒</div>
@@ -247,6 +352,38 @@
         <div class="feature-icon">🔍</div>
         <h3>Transparent & Non-Custodial</h3>
         <p>No black boxes. You retain control of your keys, your assets, and your decisions. We provide the infrastructure — you maintain sovereignty.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHT -->
+<section id="insight" style="background:#0D1228">
+  <div class="container">
+    <div class="section-label fade-in">Point of View</div>
+    <h2 class="section-title fade-in">Why Validator <span>Centralisation</span> Is a Problem</h2>
+    <div class="insight-card fade-in">
+      <div class="insight-content">
+        <div class="insight-tag">Essay</div>
+        <h3>The Pareto Problem: How a Small Group of Validators Is Quietly Centralising Proof-of-Stake Networks</h3>
+        <p>Proof-of-Stake was supposed to democratise consensus. The reality is more complicated. Across every major PoS network, stake concentration follows a predictable pattern: a small number of validators — often the same institutional players — capture a disproportionate share of rewards, influence, and governance power.</p>
+        <p>This isn't just an economic inefficiency. It's a systemic risk that undermines the core value proposition of decentralised networks. And it's getting worse, not better.</p>
+        <p>At 8020Staking, we believe the answer isn't just better tooling — it's a deliberate commitment to distributing stake more broadly, supporting independent validators, and building infrastructure that shifts the balance.</p>
+        <a href="#contact" class="btn btn-amber" style="margin-top:1.5rem;display:inline-block">Talk to Us About This</a>
+      </div>
+      <div class="insight-stat-col">
+        <div class="insight-stat">
+          <div class="insight-stat-num">~67%</div>
+          <div class="insight-stat-label">of ETH stake controlled by top 5 entities</div>
+        </div>
+        <div class="insight-stat">
+          <div class="insight-stat-num">Top 10</div>
+          <div class="insight-stat-label">Cosmos validators hold over 40% of voting power</div>
+        </div>
+        <div class="insight-stat">
+          <div class="insight-stat-num">3 pools</div>
+          <div class="insight-stat-label">control majority of Solana stake</div>
+        </div>
       </div>
     </div>
   </div>
